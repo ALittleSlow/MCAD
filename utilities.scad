@@ -7,9 +7,10 @@
 
 include <units.scad>
 
+// distance between two points, where a and b are points in 2D or 3D space
 function distance(a, b) = sqrt( (a[0] - b[0])*(a[0] - b[0]) +
                                 (a[1] - b[1])*(a[1] - b[1]) +
-                                (a[2] - b[2])*(a[2] - b[2]) );
+                                (a[2]==undef ? 0 : (a[2] - b[2])*(a[2] - b[2])) );
 
 function length2(a) = sqrt( a[0]*a[0] + a[1]*a[1] );
 
