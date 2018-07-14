@@ -3,6 +3,7 @@
 // © 2010 by Elmo Mäntynen
 
 include <curves.scad>
+include <constants.scad>
 
 /* common screw parameter
 length
@@ -12,10 +13,10 @@ inner_diameter: thickness of the shaft
 */
 
 //Uncomment to see examples
-//test_auger();
-//test_ball_groove();
-//test_ball_groove2();
-//test_ball_screw();
+test_auger();
+test_ball_groove();
+test_ball_groove2();
+test_ball_screw();
 
 module helix(pitch, length, slices=500){
     rotations = length/pitch;
@@ -42,15 +43,16 @@ module ball_groove(pitch, length, diameter, ball_radius=10) {
 
 module test_ball_groove(){ translate([0, 300, 0]) ball_groove(100, 300, 10);}
 
-module ball_groove2(pitch, length, diameter, ball_radius, slices=200){
+module ball_groove2(pitch, length, diameter, ball_radius, slices){
+	// default slices to overlap balls by 1 ball_radius
+	Slices=slices ? slices : (length/pitch)*(PI*diameter/ball_radius); 
     rotations = length/pitch;
     radius=diameter/2;
-    offset = length/slices;
+    offset = length/Slices;
     union(){
-        for (i = [0:slices]) {
-            assign (z = i*offset){
-                translate(helix_curve(pitch, radius, z)) sphere(ball_radius, $fa=5, $fs=1);
-            }
+        for (i = [0:Slices]) {
+            z = i*offset;
+			translate(helix_curve(pitch, radius, z)) sphere(ball_radius, $fa=5, $fs=1);
         }
     }
 }
