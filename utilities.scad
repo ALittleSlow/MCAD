@@ -5,6 +5,8 @@
  * Dual licenced under Creative Commons Attribution-Share Alike 3.0 and LGPL2 or later
  */
 
+// normalize now allows 2D vector 2018-07-15 BA
+
 include <units.scad>
 
 // distance between two points, where a and b are points in 2D or 3D space
@@ -14,7 +16,8 @@ function distance(a, b) = sqrt( (a[0] - b[0])*(a[0] - b[0]) +
 
 function length2(a) = sqrt( a[0]*a[0] + a[1]*a[1] );
 
-function normalized(a) = a / (max(distance([0,0,0], a), 0.00001));
+// 
+function normalized(a) = [a.x, a.y, a.z==undef ? 0 : a.z] / (max(distance([0,0,0], [a.x, a.y, a.z==undef ? 0 : a.z]), 0.00001));
 
 function normalized_axis(a) = a == "x" ? [1, 0, 0]:
                    a == "y" ? [0, 1, 0]:
