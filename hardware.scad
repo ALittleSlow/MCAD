@@ -29,18 +29,21 @@ rodendoffset = rodnutsize + rodwashersize * 2 + partthick / 2;
 vertexoffset = vertexrodspace + rodendoffset;
 
 
-renderrodthreads = false;
+renderrodthreads = true;
 renderscrewthreads = false;
 fn = 36;
 
-
-
-module rod(length, threaded) if (threaded && renderrodthreads) {
-	linear_extrude(height = length, center = true, convexity = 10, twist = -360 * length / rodpitch, $fn = fn)
-		translate([rodsize * 0.1 / 2, 0, 0])
-			circle(r = rodsize * 0.9 / 2, $fn = fn);
-} else cylinder(h = length, r = rodsize / 2, center = true, $fn = fn);
-
+// eliminate dependence on global variables, keeping backwards compatibility
+module rod(length, threaded, rodsize=6, minor=0.9, renderrodthreads=false, rodpitch) {
+	rodpitch=rodpitch ? rodpitch : rodsize/6;
+	if (threaded && renderrodthreads) {
+		linear_extrude(height = length, center = true, convexity = 10, twist = -360 * length / rodpitch, $fn = fn)
+			translate([rodsize * (1-minor) / 2, 0, 0])
+			circle(r = rodsize * minor / 2, $fn = fn);
+	} else {
+		cylinder(h = length, r = rodsize / 2, center = true, $fn = fn);
+	}
+}
 
 module screw(length, nutpos, washer, bearingpos = -1) union(){
 	translate([0, 0, -length / 2]) if (renderscrewthreads) {
@@ -113,7 +116,7 @@ module rodwasher(position) render() translate ([0, 0, position]) difference() {
 
 
 rod(20);
-translate([rodsize * 2.5, 0, 0]) rod(20, true);
+translate([rodsize * 2.5, 0, 0]) rod(20, true, renderrodthreads=renderrodthreads);
 translate([rodsize * 5, 0, 0]) screw(10, true);
 translate([rodsize * 7.5, 0, 0]) bearing();
 translate([rodsize * 10, 0, 0]) rodnut();
